@@ -5,16 +5,42 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Demo 1: Basics</title>
 
 </head>
 
 <body>
 	<h1>Demo 1: Basic Geometry and Shaders</h1>
 	<canvas id="canvas" width="400" height="400"></canvas>
+	<p>2.  Render a simple triangle with vertex colors</p>
 	<p>1.  Get the gl context from canvas and clear to a nice sky blue</p>
 
+	<script id="triangleVS" type="text/glsl">
+		attribute vec2 position;
+		attribute vec4 color;
+
+		varying vec4 vertColor;
+
+		void main() {
+			vertColor = color;
+			gl_Position = vec4(position, 0, 1);
+		}
+	</script>
+	<script id="triangleFS" type="text/glsl">
+		precision mediump float;
+
+		varying vec4 vertColor;
+
+		void main() {
+			gl_FragColor = vertColor;
+		}
+	</script>
 	<script src="basics.js"></script>
 </body>
 
+<footer>
+	<hr />
+	<p>by Spencer Radtke</p>
+	<p> Feb 18 2026</p>
+</footer>
 </html>
