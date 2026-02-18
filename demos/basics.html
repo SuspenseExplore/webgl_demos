@@ -12,27 +12,32 @@
 <body>
 	<h1>Demo 1: Basic Geometry and Shaders</h1>
 	<canvas id="canvas" width="400" height="400"></canvas>
-	<p>2.  Render a simple triangle with vertex colors</p>
-	<p>1.  Get the gl context from canvas and clear to a nice sky blue</p>
+	<form>
+		<fieldset>
+			<legend>Options</legend>
+			<label>Shape:</label>
+			<select id="slcShape" onchange="render()">
+				<option value="triangle">Triangle</option>
+				<option value="square">Square</option>
+			</select>
+		</fieldset>
+	</form>
+	<p>3. Choose to render a triangle or square, but they're just green</p>
+	<p>2. Render a simple triangle with vertex colors</p>
+	<p>1. Get the gl context from canvas and clear to a nice sky blue</p>
 
 	<script id="triangleVS" type="text/glsl">
 		attribute vec2 position;
-		attribute vec4 color;
-
-		varying vec4 vertColor;
 
 		void main() {
-			vertColor = color;
 			gl_Position = vec4(position, 0, 1);
 		}
 	</script>
 	<script id="triangleFS" type="text/glsl">
 		precision mediump float;
 
-		varying vec4 vertColor;
-
 		void main() {
-			gl_FragColor = vertColor;
+			gl_FragColor = vec4(0.0, 0.5, 0.0, 1.0);
 		}
 	</script>
 	<script src="basics.js"></script>
@@ -43,4 +48,5 @@
 	<p>by Spencer Radtke</p>
 	<p> Feb 18 2026</p>
 </footer>
+
 </html>
