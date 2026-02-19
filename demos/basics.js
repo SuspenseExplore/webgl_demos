@@ -16,8 +16,9 @@ var gl;
 var uMousePos = -1;
 var uColor = -1;
 var uSideCount = -1;
+var uViewportSize = -1;
 
-var canvasSize = [800, 800];
+var canvasSize = [800, 600];
 var mousePos = [0, 0];
 var shapeColor = [0, 0.5, 0, 1]; // Default green color
 var sideCount = 3;
@@ -41,6 +42,7 @@ function init() {
 	uMousePos = gl.getUniformLocation(program, "mousePos");
 	uColor = gl.getUniformLocation(program, "color");
 	uSideCount = gl.getUniformLocation(program, "sideCount");
+	uViewportSize = gl.getUniformLocation(program, "viewportSize");
 
 	var attrVertId = gl.getAttribLocation(program, "vertId");
 	gl.enableVertexAttribArray(attrVertId);
@@ -60,9 +62,11 @@ function init() {
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
+	console.log(mousePos);
 	gl.uniform2fv(uMousePos, mousePos);
 	gl.uniform4fv(uColor, shapeColor);
 	gl.uniform1f(uSideCount, sideCount);
+	gl.uniform2fv(uViewportSize, canvasSize);
 
 	console.log(sideCount);
 	gl.drawArrays(gl.TRIANGLE_FAN, 0, sideCount + 2);
@@ -132,8 +136,8 @@ function loadProgramFromElmts(gl, name) {
  * @param {[number, number]} pos 
  */
 function setMousePos(pos) {
-	mousePos[0] = pos.offsetX * 2.0 / canvasSize[0] - 1.0;
-	mousePos[1] = -(pos.offsetY * 2.0 / canvasSize[1] - 1.0);
+	mousePos[0] = pos.offsetX;
+	mousePos[1] = canvasSize[1] - pos.offsetY;
 }
 
 /**

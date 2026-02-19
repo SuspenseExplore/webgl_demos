@@ -25,6 +25,7 @@
 		</fieldset>
 	</form>
 	<h3>Changelog</h3>
+	<p>7. Factored canvas size into the shader to correct for aspect ratio</p>
 	<p>6. Added slider to change shape sides from 3 to 20</p>
 	<p>5. Added color uniform and input to change shape color</p>
 	<p>4. Added mouse move event handler that sets the shape location</p>
@@ -36,18 +37,24 @@
 		attribute float vertId;
 
 		uniform vec2 mousePos;
+		uniform vec2 viewportSize;
 		uniform float sideCount;
 
 		void main() {
 			// vertId 0 is the center vertex of the triangle fan, the rest are the vertices around the edge
 			if (vertId == 0.0) {
-				gl_Position = vec4(mousePos, 0.0, 1.0);
+				gl_Position = vec4(mousePos / viewportSize * 2.0 - 1.0, 0.0, 1.0);
 				return;
 			}
 
-			float x = sin((vertId - 1.0) / sideCount * 6.2831853) * 0.5;
-			float y = cos((vertId - 1.0) / sideCount * 6.2831853) * 0.5;
-			gl_Position = vec4(vec2(x, y) + mousePos, 0.0, 1.0);
+			vec2 pos = mousePos;
+			pos.x += sin((vertId - 1.0) / sideCount * 6.2831853) * 50.0;
+			pos.y += cos((vertId - 1.0) / sideCount * 6.2831853) * 50.0;
+			pos /= viewportSize;
+			pos *= 2.0;
+			pos -= 1.0;
+
+			gl_Position = vec4(pos, 0.0, 1.0);
 		}
 	</script>
 	<script id="triangleFS" type="text/glsl">
