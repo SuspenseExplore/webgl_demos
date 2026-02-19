@@ -20,11 +20,18 @@
 			<label id="lblSideCount">3</label>
 			<br />
 
+			<label>Shape Radius:</label>
+			<input type="range" id="inpRadius" min="10" max="200" value="100"
+				onchange="setRadius(parseFloat(this.value))" />
+			<label id="lblRadius">100</label>
+			<br />
+
 			<label>Shape Color:</label>
 			<input type="color" id="inpColor" value="#008000" onchange="setShapeColor(this.value)" />
 		</fieldset>
 	</form>
 	<h3>Changelog</h3>
+	<p>8. Added radius uniform and input to change shape size</p>
 	<p>7. Factored canvas size into the shader to correct for aspect ratio</p>
 	<p>6. Added slider to change shape sides from 3 to 20</p>
 	<p>5. Added color uniform and input to change shape color</p>
@@ -39,6 +46,7 @@
 		uniform vec2 mousePos;
 		uniform vec2 viewportSize;
 		uniform float sideCount;
+		uniform float radius;
 
 		void main() {
 			// vertId 0 is the center vertex of the triangle fan, the rest are the vertices around the edge
@@ -48,8 +56,8 @@
 			}
 
 			vec2 pos = mousePos;
-			pos.x += sin((vertId - 1.0) / sideCount * 6.2831853) * 50.0;
-			pos.y += cos((vertId - 1.0) / sideCount * 6.2831853) * 50.0;
+			pos.x += sin((vertId - 1.0) / sideCount * 6.2831853) * radius;
+			pos.y += cos((vertId - 1.0) / sideCount * 6.2831853) * radius;
 			pos /= viewportSize;
 			pos *= 2.0;
 			pos -= 1.0;

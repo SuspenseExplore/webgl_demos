@@ -17,11 +17,13 @@ var uMousePos = -1;
 var uColor = -1;
 var uSideCount = -1;
 var uViewportSize = -1;
+var uRadius = -1;
 
 var canvasSize = [800, 600];
 var mousePos = [0, 0];
 var shapeColor = [0, 0.5, 0, 1]; // Default green color
 var sideCount = 3;
+var radius = 100;
 
 /**
  * Initialize WebGL
@@ -43,6 +45,7 @@ function init() {
 	uColor = gl.getUniformLocation(program, "color");
 	uSideCount = gl.getUniformLocation(program, "sideCount");
 	uViewportSize = gl.getUniformLocation(program, "viewportSize");
+	uRadius = gl.getUniformLocation(program, "radius");
 
 	var attrVertId = gl.getAttribLocation(program, "vertId");
 	gl.enableVertexAttribArray(attrVertId);
@@ -67,6 +70,7 @@ function render() {
 	gl.uniform4fv(uColor, shapeColor);
 	gl.uniform1f(uSideCount, sideCount);
 	gl.uniform2fv(uViewportSize, canvasSize);
+	gl.uniform1f(uRadius, radius);
 
 	console.log(sideCount);
 	gl.drawArrays(gl.TRIANGLE_FAN, 0, sideCount + 2);
@@ -174,6 +178,17 @@ function setShapeColor(color) {
 	var b = parseInt(color.slice(5, 7), 16) / 255;
 
 	shapeColor = [r, g, b, 1];
+}
+
+/**
+ * Set the shape's radius.
+ * 
+ * @param {number} r 
+ */
+function setRadius(r) {
+	radius = r;
+	document.getElementById("lblRadius").textContent = r;
+	render();
 }
 
 init();
