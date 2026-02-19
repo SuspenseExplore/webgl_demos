@@ -12,25 +12,36 @@ var vertexBuffer = null;
 
 var gl;
 
-// shader uniform locations
-var uMousePos = -1;
-var uColor = -1;
-var uSideCount = -1;
-var uViewportSize = -1;
-var uRadius = -1;
-
-var canvasSize = [800, 600];
-var mousePos = [0, 0];
-var shapeColor = [0, 0.5, 0, 1]; // Default green color
-var sideCount = 3;
-var radius = 100;
+// shader uniform data
+var uniforms = {
+	mousePos: {
+		location: -1,
+		value: [0, 0]
+	},
+	color: {
+		location: -1,
+		value: [0, 0.5, 0, 1]
+	},
+	sideCount: {
+		location: -1,
+		value: 3
+	},
+	viewportSize: {
+		location: -1,
+		value: [800, 600]
+	},
+	radius: {
+	location: -1,
+	value: 100
+	}
+};
 
 /**
  * Initialize WebGL
  */
 function init() {
 	var canvas = document.getElementById("canvas");
-	setCanvasSize(canvasSize);
+	setCanvasSize(uniforms.viewportSize.value);
 
 	gl = canvas.getContext("webgl");
 	if (!gl) {
@@ -41,11 +52,12 @@ function init() {
 
 	var program = loadProgramFromElmts(gl, "triangle");
 	gl.useProgram(program);
-	uMousePos = gl.getUniformLocation(program, "mousePos");
-	uColor = gl.getUniformLocation(program, "color");
-	uSideCount = gl.getUniformLocation(program, "sideCount");
-	uViewportSize = gl.getUniformLocation(program, "viewportSize");
-	uRadius = gl.getUniformLocation(program, "radius");
+	
+	uniforms.mousePos.location = gl.getUniformLocation(program, "mousePos");
+	uniforms.color.location = gl.getUniformLocation(program, "color");
+	uniforms.sideCount.location = gl.getUniformLocation(program, "sideCount");
+	uniforms.viewportSize.location = gl.getUniformLocation(program, "viewportSize");
+	uniforms.radius.location = gl.getUniformLocation(program, "radius");
 
 	var attrVertId = gl.getAttribLocation(program, "vertId");
 	gl.enableVertexAttribArray(attrVertId);
@@ -65,15 +77,13 @@ function init() {
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-	console.log(mousePos);
-	gl.uniform2fv(uMousePos, mousePos);
-	gl.uniform4fv(uColor, shapeColor);
-	gl.uniform1f(uSideCount, sideCount);
-	gl.uniform2fv(uViewportSize, canvasSize);
-	gl.uniform1f(uRadius, radius);
+	gl.uniform2fv(uniforms.mousePos.location, uniforms.mousePos.value);
+	gl.uniform4fv(uniforms.color.location, uniforms.color.value);
+	gl.uniform1f(uniforms.sideCount.location, uniforms.sideCount.value);
+	gl.uniform2fv(uniforms.viewportSize.location, uniforms.viewportSize.value);
+	gl.uniform1f(uniforms.radius.location, uniforms.radius.value);
 
-	console.log(sideCount);
-	gl.drawArrays(gl.TRIANGLE_FAN, 0, sideCount + 2);
+	gl.drawArrays(gl.TRIANGLE_FAN, 0, uniforms.sideCount.value + 2);
 }
 
 /**
@@ -140,8 +150,8 @@ function loadProgramFromElmts(gl, name) {
  * @param {[number, number]} pos 
  */
 function setMousePos(pos) {
-	mousePos[0] = pos.offsetX;
-	mousePos[1] = canvasSize[1] - pos.offsetY;
+	uniforms.mousePos.value[0] = pos.offsetX;
+	uniforms.mousePos.value[1] = uniforms.viewportSize.value[1] - pos.offsetY;
 }
 
 /**
@@ -152,7 +162,7 @@ function setMousePos(pos) {
 function setCanvasSize(size) {
 	var canvas = document.getElementById("canvas");
 	[canvas.width, canvas.height] = size;
-	canvasSize = size;
+	uniforms.viewportSize.value = size;
 }
 
 /**
@@ -161,7 +171,7 @@ function setCanvasSize(size) {
  * @param {number} count 
  */
 function setSideCount(count) {
-	sideCount = count;
+	uniforms.sideCount.value = count;
 	document.getElementById("lblSideCount").textContent = count;
 	render();
 }
@@ -177,7 +187,7 @@ function setShapeColor(color) {
 	var g = parseInt(color.slice(3, 5), 16) / 255;
 	var b = parseInt(color.slice(5, 7), 16) / 255;
 
-	shapeColor = [r, g, b, 1];
+	uniforms.color.value = [r, g, b, 1];
 }
 
 /**
@@ -186,7 +196,7 @@ function setShapeColor(color) {
  * @param {number} r 
  */
 function setRadius(r) {
-	radius = r;
+	uniforms.radius.value = r;
 	document.getElementById("lblRadius").textContent = r;
 	render();
 }
