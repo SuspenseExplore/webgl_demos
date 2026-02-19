@@ -19,9 +19,14 @@
 				<option value="triangle">Triangle</option>
 				<option value="square">Square</option>
 			</select>
+			<br />
+
+			<label>Shape Color:</label>
+			<input type="color" id="inpColor" value="#008000" onchange="setShapeColor(this.value)" />
 		</fieldset>
 	</form>
 	<h3>Changelog</h3>
+	<p>5. Added color uniform and input to change shape color</p>
 	<p>4. Added mouse move event handler that sets the shape location</p>
 	<p>3. Choose to render a triangle or square, but they're just green</p>
 	<p>2. Render a simple triangle with vertex colors</p>
@@ -39,8 +44,10 @@
 	<script id="triangleFS" type="text/glsl">
 		precision mediump float;
 
+		uniform vec4 color;
+
 		void main() {
-			gl_FragColor = vec4(0.0, 0.5, 0.0, 1.0);
+			gl_FragColor = color;
 		}
 	</script>
 	<script src="basics.js"></script>

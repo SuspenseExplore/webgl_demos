@@ -28,9 +28,14 @@ var shapeData = {
 var vertexBuffer = null;
 
 var gl;
+
+// shader uniform locations
+var uMousePos = -1;
+var uColor = -1;
+
 var canvasSize = [800, 800];
 var mousePos = [0, 0];
-var uMousePos = -1;
+var shapeColor = [0, 0.5, 0, 1]; // Default green color
 
 /**
  * Initialize WebGL
@@ -49,6 +54,7 @@ function init() {
 	var program = loadProgramFromElmts(gl, "triangle");
 	gl.useProgram(program);
 	uMousePos = gl.getUniformLocation(program, "mousePos");
+	uColor = gl.getUniformLocation(program, "color");
 
 	var attrPos = gl.getAttribLocation(program, "position");
 	gl.enableVertexAttribArray(attrPos);
@@ -68,6 +74,7 @@ function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 	gl.uniform2fv(uMousePos, mousePos);
+	gl.uniform4fv(uColor, shapeColor);
 
 	var shape = document.getElementById("slcShape").value;
 	gl.drawArrays(gl.TRIANGLE_FAN, shapeData[shape].offset, shapeData[shape].count);
@@ -131,15 +138,39 @@ function loadProgramFromElmts(gl, name) {
 	return program;
 }
 
+/**
+ * Store the mouse position.
+ * 
+ * @param {[number, number]} pos 
+ */
 function setMousePos(pos) {
 	mousePos[0] = pos.offsetX * 2.0 / canvasSize[0] - 1.0;
 	mousePos[1] = -(pos.offsetY * 2.0 / canvasSize[1] - 1.0);
 }
 
+/**
+ * Set the canvas size.
+ * 
+ * @param {[int, int]} size 
+ */
 function setCanvasSize(size) {
 	var canvas = document.getElementById("canvas");
 	[canvas.width, canvas.height] = size;
 	canvasSize = size;
+}
+/**
+ * Set the shape color.
+ * 
+ * @param {string} color Hex color string
+ */
+function setShapeColor(color) {
+	// Convert hex color to RGBA array
+	var r = parseInt(color.substr(1, 2), 16) / 255;
+	var g = parseInt(color.substr(3, 2), 16) / 255;
+	var b = parseInt(color.substr(5, 2), 16) / 255;
+
+	shapeColor = [r, g, b, 1];
+	console.log("Setting shape color to " + shapeColor);
 }
 
 init();
