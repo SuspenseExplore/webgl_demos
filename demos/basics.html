@@ -14,11 +14,10 @@
 	<form>
 		<fieldset>
 			<legend>Options</legend>
-			<label>Shape:</label>
-			<select id="slcShape" onchange="render()">
-				<option value="triangle">Triangle</option>
-				<option value="square">Square</option>
-			</select>
+			<label>Shape sides:</label>
+			<input type="range" id="inpSides" min="3" max="20" value="3"
+				onchange="setSideCount(parseFloat(this.value))" />
+			<label id="lblSideCount">3</label>
 			<br />
 
 			<label>Shape Color:</label>
@@ -26,6 +25,7 @@
 		</fieldset>
 	</form>
 	<h3>Changelog</h3>
+	<p>6. Added slider to change shape sides from 3 to 20</p>
 	<p>5. Added color uniform and input to change shape color</p>
 	<p>4. Added mouse move event handler that sets the shape location</p>
 	<p>3. Choose to render a triangle or square, but they're just green</p>
@@ -33,12 +33,21 @@
 	<p>1. Get the gl context from canvas and clear to a nice sky blue</p>
 
 	<script id="triangleVS" type="text/glsl">
-		attribute vec2 position;
+		attribute float vertId;
 
 		uniform vec2 mousePos;
+		uniform float sideCount;
 
 		void main() {
-			gl_Position = vec4(position + mousePos, 0, 1);
+			// vertId 0 is the center vertex of the triangle fan, the rest are the vertices around the edge
+			if (vertId == 0.0) {
+				gl_Position = vec4(mousePos, 0.0, 1.0);
+				return;
+			}
+
+			float x = sin((vertId - 1.0) / sideCount * 6.2831853) * 0.5;
+			float y = cos((vertId - 1.0) / sideCount * 6.2831853) * 0.5;
+			gl_Position = vec4(vec2(x, y) + mousePos, 0.0, 1.0);
 		}
 	</script>
 	<script id="triangleFS" type="text/glsl">

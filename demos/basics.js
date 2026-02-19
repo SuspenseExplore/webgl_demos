@@ -1,20 +1,3 @@
-var vertData = [
-	// triangle
-	0, 0,
-	-0.5, -0.5,
-	0, 0.5,
-	0.5, -0.5,
-	-0.5, -0.5,
-
-	// square
-	0, 0,
-	-0.5, -0.5,
-	0.5, -0.5,
-	0.5, 0.5,
-	-0.5, 0.5,
-	-0.5, -0.5
-];
-
 var shapeData = {
 	triangle: {
 		offset: 0,
@@ -32,10 +15,12 @@ var gl;
 // shader uniform locations
 var uMousePos = -1;
 var uColor = -1;
+var uSideCount = -1;
 
 var canvasSize = [800, 800];
 var mousePos = [0, 0];
 var shapeColor = [0, 0.5, 0, 1]; // Default green color
+var sideCount = 3;
 
 /**
  * Initialize WebGL
@@ -55,14 +40,16 @@ function init() {
 	gl.useProgram(program);
 	uMousePos = gl.getUniformLocation(program, "mousePos");
 	uColor = gl.getUniformLocation(program, "color");
+	uSideCount = gl.getUniformLocation(program, "sideCount");
 
-	var attrPos = gl.getAttribLocation(program, "position");
-	gl.enableVertexAttribArray(attrPos);
+	var attrVertId = gl.getAttribLocation(program, "vertId");
+	gl.enableVertexAttribArray(attrVertId);
 
+	// Create a buffer with vertex ids from 0 to 21 (enough for a 20 sided shape + center vertex)
 	vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertData), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attrPos, 2, gl.FLOAT, false, 4 * 2, 0);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...Array(22).keys()]), gl.STATIC_DRAW);
+	gl.vertexAttribPointer(attrVertId, 1, gl.FLOAT, false, 0, 0);
 
 	render();
 }
@@ -75,9 +62,10 @@ function render() {
 
 	gl.uniform2fv(uMousePos, mousePos);
 	gl.uniform4fv(uColor, shapeColor);
+	gl.uniform1f(uSideCount, sideCount);
 
-	var shape = document.getElementById("slcShape").value;
-	gl.drawArrays(gl.TRIANGLE_FAN, shapeData[shape].offset, shapeData[shape].count);
+	console.log(sideCount);
+	gl.drawArrays(gl.TRIANGLE_FAN, 0, sideCount + 2);
 }
 
 /**
@@ -158,6 +146,18 @@ function setCanvasSize(size) {
 	[canvas.width, canvas.height] = size;
 	canvasSize = size;
 }
+
+/**
+ * Set the number of sides for the shape.
+ * 
+ * @param {number} count 
+ */
+function setSideCount(count) {
+	sideCount = count;
+	document.getElementById("lblSideCount").textContent = count;
+	render();
+}
+
 /**
  * Set the shape color.
  * 
@@ -165,12 +165,11 @@ function setCanvasSize(size) {
  */
 function setShapeColor(color) {
 	// Convert hex color to RGBA array
-	var r = parseInt(color.substr(1, 2), 16) / 255;
-	var g = parseInt(color.substr(3, 2), 16) / 255;
-	var b = parseInt(color.substr(5, 2), 16) / 255;
+	var r = parseInt(color.slice(1, 3), 16) / 255;
+	var g = parseInt(color.slice(3, 5), 16) / 255;
+	var b = parseInt(color.slice(5, 7), 16) / 255;
 
 	shapeColor = [r, g, b, 1];
-	console.log("Setting shape color to " + shapeColor);
 }
 
 init();
