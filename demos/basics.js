@@ -13,7 +13,6 @@ var vertData = [
 	0.5, 0.5,
 	-0.5, 0.5,
 	-0.5, -0.5
-
 ];
 
 var shapeData = {
@@ -29,13 +28,17 @@ var shapeData = {
 var vertexBuffer = null;
 
 var gl;
-var attrPos;
+var canvasSize = [800, 800];
+var mousePos = [0, 0];
+var uMousePos = -1;
 
 /**
  * Initialize WebGL
  */
 function init() {
 	var canvas = document.getElementById("canvas");
+	setCanvasSize(canvasSize);
+
 	gl = canvas.getContext("webgl");
 	if (!gl) {
 		console.log("WebGL not supported, falling back on experimental-webgl");
@@ -45,8 +48,9 @@ function init() {
 
 	var program = loadProgramFromElmts(gl, "triangle");
 	gl.useProgram(program);
+	uMousePos = gl.getUniformLocation(program, "mousePos");
 
-	attrPos = gl.getAttribLocation(program, "position");
+	var attrPos = gl.getAttribLocation(program, "position");
 	gl.enableVertexAttribArray(attrPos);
 
 	vertexBuffer = gl.createBuffer();
@@ -63,9 +67,9 @@ function init() {
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
+	gl.uniform2fv(uMousePos, mousePos);
+
 	var shape = document.getElementById("slcShape").value;
-	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-	gl.vertexAttribPointer(attrPos, 2, gl.FLOAT, false, 4 * 2, 0);
 	gl.drawArrays(gl.TRIANGLE_FAN, shapeData[shape].offset, shapeData[shape].count);
 }
 
@@ -125,6 +129,17 @@ function loadProgramFromElmts(gl, name) {
 		return null;
 	}
 	return program;
+}
+
+function setMousePos(pos) {
+	mousePos[0] = pos.offsetX * 2.0 / canvasSize[0] - 1.0;
+	mousePos[1] = -(pos.offsetY * 2.0 / canvasSize[1] - 1.0);
+}
+
+function setCanvasSize(size) {
+	var canvas = document.getElementById("canvas");
+	[canvas.width, canvas.height] = size;
+	canvasSize = size;
 }
 
 init();

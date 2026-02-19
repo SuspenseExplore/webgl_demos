@@ -6,12 +6,11 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Demo 1: Basics</title>
-
 </head>
 
 <body>
 	<h1>Demo 1: Basic Geometry and Shaders</h1>
-	<canvas id="canvas" width="400" height="400"></canvas>
+	<canvas id="canvas" width="400" height="400" onmousemove="mouseMove(event)"></canvas>
 	<form>
 		<fieldset>
 			<legend>Options</legend>
@@ -22,6 +21,8 @@
 			</select>
 		</fieldset>
 	</form>
+	<h3>Changelog</h3>
+	<p>4. Added mouse move event handler that sets the shape location</p>
 	<p>3. Choose to render a triangle or square, but they're just green</p>
 	<p>2. Render a simple triangle with vertex colors</p>
 	<p>1. Get the gl context from canvas and clear to a nice sky blue</p>
@@ -29,8 +30,10 @@
 	<script id="triangleVS" type="text/glsl">
 		attribute vec2 position;
 
+		uniform vec2 mousePos;
+
 		void main() {
-			gl_Position = vec4(position, 0, 1);
+			gl_Position = vec4(position + mousePos, 0, 1);
 		}
 	</script>
 	<script id="triangleFS" type="text/glsl">
@@ -41,6 +44,12 @@
 		}
 	</script>
 	<script src="basics.js"></script>
+	<script>
+		function mouseMove(e) {
+			setMousePos(e);
+			render();
+		}
+	</script>
 </body>
 
 <footer>
